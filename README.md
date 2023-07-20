@@ -6,7 +6,7 @@ This new version of TwiTracker has been developed right from the start with Pyth
 **NOW IN 1 SECOND!!!**
 
 ## Web
-[lauglitch.com](lauglitch.com)
+[lauglitch.com](https://www.lauglitch.com)
 
 ## Current Version
 1.0
