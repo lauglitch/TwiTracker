@@ -9,7 +9,7 @@ This new version of TwiTracker has been developed right from the start with Pyth
 [lauglitch.com](https://www.lauglitch.com)
 
 ## Current Version
-1.0
+1.1
 
 ## Previous Steps
 You will need to download data from your Twitter account to use this application.
@@ -20,9 +20,10 @@ It will ask you to log again. Then, you will receive your Twitter data on you as
 ## How To Use
 1. Download application from [lauglitch.itch.io/twitracker](https://lauglitch.itch.io/twitracker) 
 2. Download your Twitter data (see Previous Steps) 
-3. Execute "TwiTracker.exe" 
-4. Press "exportar datos" button and select your Twitter data
-5. Look for the file "exportedData.txt" in the root of the app  
+3. Execute "TwiTracker.exe"
+4. (Optional) Press "ignore urls" to load a .txt file with the urls that you do not want to keep in mind for the result
+5. Press "exportar datos" button and select your Twitter data
+6. Look for the file "exportedData.txt" in the root of the app  
 
 ## Technologies
 Developed with Tkinter and Pygame
