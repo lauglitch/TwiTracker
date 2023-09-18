@@ -11,6 +11,7 @@ height = 600
 hexaColor = '#00acee'   #Twitter blue color in hexadecimal format
 followerFile = None
 followingFile = None
+ignoreUrlsFile = None
 
 # 1- Set window's properties
 ##### SOFTWARE UI #####
@@ -27,7 +28,7 @@ def set_window():
 # 2- Set instructions' text and its properties
 ##### SOFTWARE UI #####
 def set_instructions():
-    instructions = Label(window, text="1- Inicia sesión en tu cuenta de Twitter y ve a Más > Ajustes y Soporte > \n    Ajustes y privacidad > Tu cuenta > Descargar un archivo de tus datos. \n2- Cuando recibas el fichero en tu correo, descárgalo.\n3- Pulsa el botón 'EXPORTAR DATOS' y selecciona el fichero descargado.\n4- Archivo listo en la carpeta de TwiTracker con el nombre 'exportedData.txt'.",
+    instructions = Label(window, text="1- Inicia sesión en tu cuenta de Twitter y ve a Más > Ajustes y Soporte > \n    Ajustes y privacidad > Tu cuenta > Descargar un archivo de tus datos. \n2- Cuando recibas el fichero en tu correo, descárgalo.\n3- (OPCIONAL) Puedes seleccionar un fichero .txt con las url que no quieras \n    que se tomen en cuenta con el botón 'IGNORAR URLS'.\n4- Pulsa el botón 'EXPORTAR DATOS' y selecciona el fichero descargado.\n5- Archivo listo en la carpeta de TwiTracker con el nombre 'exportedData.txt'.",
                          font=("Arial", 16),
                          bg=hexaColor,
                          fg="white",
@@ -74,7 +75,30 @@ def find_files():
     else:
         print("ZIP not selected.")
 
-# 5- Method called after "follower.js" and "following.js" are found
+# 5- Method called when "IGNORAR URLS" button is pressed
+##### SOFTWARE LOGIC #####
+def ignore_urls():
+    show_error(False)
+
+    # Open file explorer and get .txt path
+    ruta_archivo = filedialog.askopenfilename(filetypes=[("Archivo TXT", "*.txt")])
+
+    if ruta_archivo:
+        try:
+            with open(ruta_archivo, "r") as archivo:
+                global ignoreUrlsFile 
+                ignoreUrlsFile =  [line.strip() for line in archivo]
+
+        except FileNotFoundError:
+            print(f"El archivo {ruta_archivo} no se encuentra.")
+        except IOError:
+            print(f"No se puede leer el archivo {ruta_archivo}.")
+        else:
+            print("'URLs to ignore' file found.")
+    else:
+        print("TXT not selected.")
+
+# 6- Method called after "follower.js" and "following.js" are found
 ##### SOFTWARE LOGIC #####
 # TODO:
 def export_data():
@@ -99,10 +123,18 @@ def export_data():
     #print(ids)                        
 
     # Math Calculation -> Result = B - (B ∩ A)
-        # Intersection1: intersection = list(set(followerID).difference(followingID)) 
-        # Intersection2: intersection = list(set(lista1).intersection(lista2))
+        # difference = list(set(followerID).difference(followingID)) 
+        # intersection = list(set(lista1).intersection(lista2))
     intersection = list(set(followingID) & set(followerID))
     result = [x for x in followingID if x not in intersection]
+
+    # Distract urls to ignore if ignoreUrlsFile has been selected
+    if ignoreUrlsFile:
+        print(result)
+        print(ignoreUrlsFile)
+        result = [elemento for elemento in result if elemento not in ignoreUrlsFile]
+        result = [result for result in result if result.decode('utf-8') not in ignoreUrlsFile]
+
     #print("Longitud del resultado: ", len(result))
 
     show_info(len(followerID), len(followingID), len(result))
@@ -118,7 +150,7 @@ def export_data():
         play_sound(False)
         print("Data couldn't be saved.")
 
-# 6- Method called after "exportedData.txt" exportation failed or "EXPORTAR DATOS" is pressed, that shows or hides error label
+# 7- Method called after "exportedData.txt" exportation failed or "EXPORTAR DATOS" is pressed, that shows or hides error label
 ##### SOFTWARE UI #####
 def show_error(showError):
     if showError:
@@ -126,7 +158,7 @@ def show_error(showError):
     else:
         errorText.config(text="")
 
-# 7- Method called after "exportedData.txt" exportation succeed 
+# 8- Method called after "exportedData.txt" exportation succeed 
 ##### SOFTWARE UI #####
 # It adds 3 visible variables to the UI that shows follower, following and unmutal counts
 def show_info(followerCount, followingCount, unmutualCount):
@@ -139,7 +171,7 @@ def show_info(followerCount, followingCount, unmutualCount):
     unmutualText = Label(window, text=("unmutual: " + str(unmutualCount)), font=("Arial", 16), bg=hexaColor, fg="white")
     unmutualText.place(x=525, y=500)
 
-# 8 - Method called after "exportedData.txt" exportation succeed or failed to play a different sound
+# 9 - Method called after "exportedData.txt" exportation succeed or failed to play a different sound
 def play_sound(succeed):
     if succeed:
         pygame.mixer.music.load("Assets/successAudio.mp3")  # Ruta del archivo de sonido
@@ -174,13 +206,22 @@ titleImage = tk.Label(window, image=image_tk, bg=hexaColor,)
 titleImage.pack()
 
 # Set buttons and its properties
-btnImage = Image.open("Assets/exportButtonPNG.png")
+btnImage = Image.open("Assets/ignoreButtonPNG.png")
 btnImage_tk = ImageTk.PhotoImage(btnImage)
-exportButton = ttk.Button(window, image =btnImage_tk, command=find_files, style="TButton")
+ignoreButton = ttk.Button(window, image =btnImage_tk, command=ignore_urls, style="TButton")
 styles = ttk.Style()
 styles.configure('TButton', borderwidth=0, relief="flat", borderradius=8)
-posX = (height / 2 - 30)
-posY = (width / 2 - 30)
+posX = (height - 500)
+posY = (width / 2 - 15)
+ignoreButton.place(x= posX, y = posY)
+
+btnImage2 = Image.open("Assets/exportButtonPNG.png")
+btnImage2_tk = ImageTk.PhotoImage(btnImage2)
+exportButton = ttk.Button(window, image =btnImage2_tk, command=find_files, style="TButton")
+styles = ttk.Style()
+styles.configure('TButton', borderwidth=0, relief="flat", borderradius=8)
+posX = (height / 2 + 140)
+posY = (width / 2 - 15)
 exportButton.place(x= posX, y = posY)
 
 # Set error Label
